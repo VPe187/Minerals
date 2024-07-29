@@ -2,49 +2,40 @@
     <div class="m-[1rem] md:m-[1rem]">
         <header class="mb-4 relative overflow-hidden">
             <div class="flex flex-col items-center w-full text-stone-400 relative z-10 mt-4">
-                <router-link :to="{ name: 'Home', query: { scrollPosition: route.query.scrollPosition } }">
+                <router-link
+                    :to="{ name: 'Home', query: { scrollPosition: route.query.scrollPosition } }"
+                    class="w-16 h-16 bg-stone-800 rounded-full shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex items-center justify-center group">
                     <svg
-                        width="100px"
-                        height="100px"
-                        viewBox="0 0 117 117"
-                        version="1.1"
+                        width="60%"
+                        height="60%"
+                        viewBox="0 0 24 24"
+                        fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <title />
-
-                        <desc />
-
-                        <defs />
-
-                        <g fill="none" fill-rule="evenodd" id="Page-1" stroke="none" stroke-width="1">
-                            <g fill-rule="nonzero" id="left-arrow">
-                                <path
-                                    d="M58.5,116.6 C90.5,116.6 116.6,90.6 116.6,58.5 C116.6,26.4 90.6,0.5 58.5,0.5 C26.4,0.5 0.5,26.5 0.5,58.5 C0.5,90.5 26.5,116.6 58.5,116.6 Z M58.5,8.6 C86,8.6 108.4,31 108.4,58.5 C108.4,86 86,108.4 58.5,108.4 C31,108.4 8.6,86 8.6,58.5 C8.6,31 31,8.6 58.5,8.6 Z"
-                                    fill="#4A4A4A"
-                                    id="Shape" />
-
-                                <path
-                                    d="M64,87.5 C64.8,88.3 65.8,88.7 66.9,88.7 C67.9,88.7 69,88.3 69.8,87.5 C71.4,85.9 71.4,83.3 69.8,81.7 L46.3,58.2 L69.8,34.7 C71.4,33.1 71.4,30.5 69.8,28.9 C68.2,27.3 65.6,27.3 64,28.9 L37.6,55.3 C36.8,56.1 36.4,57.1 36.4,58.2 C36.4,59.3 36.8,60.3 37.6,61.1 L64,87.5 Z"
-                                    fill="#17AB13"
-                                    id="Shape" />
-                            </g>
-                        </g>
+                        class="transition-transform duration-300 group-hover:rotate-[-360deg]">
+                        <path
+                            d="M15 18L9 12L15 6"
+                            stroke="#E2E8F0"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
                     </svg>
                 </router-link>
             </div>
         </header>
         <div
             v-if="!noImagesFound"
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8 mt-2">
-            <div v-for="(imgSrc, index) in imgSources" :key="index" @click="openModal(imgSrc.full)">
-                <img
-                    :src="imgSrc.thumbnail"
-                    style="user-drag: none"
-                    class="w-full h-full border border-black saturate-50 rounded-xl hover:scale-105 hover:border hover:saturate-100 transition-all duration-200 cursor-pointer"
-                    @contextmenu.prevent />
+            class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-6 mt-1">
+            <div
+                v-for="(imgSrc, index) in imgSources"
+                :key="index"
+                @click="openModal(imgSrc.full)"
+                class="sphere-container">
+                <div class="sphere">
+                    <img :src="imgSrc.thumbnail" class="sphere-image" @contextmenu.prevent />
+                </div>
             </div>
         </div>
-        <div v-else class="text-center mt-8 text-xl text-stone-600">404</div>
+        <div v-else class="text-center mt-4 text-xl text-stone-600">404</div>
     </div>
     <div
         v-if="showModal"
@@ -92,6 +83,9 @@ const route = useRoute();
 const mineral = ref("");
 const imgSources = ref([]);
 const noImagesFound = ref(false);
+const showModal = ref(false);
+const selectedImageSrc = ref("");
+const imageLoaded = ref(false);
 
 const loadImages = async () => {
     imgSources.value = [];
@@ -135,10 +129,6 @@ watch(
     }
 );
 
-const showModal = ref(false);
-const selectedImageSrc = ref("");
-const imageLoaded = ref(false);
-
 const openModal = (imgSrc) => {
     imageLoaded.value = false;
     selectedImageSrc.value = imgSrc;
@@ -153,4 +143,103 @@ const closeModal = () => {
 const onImageLoad = () => {
     imageLoaded.value = true;
 };
+
+const startRotatingBorder = (index) => {
+    rotatingBorders.value[index] = true;
+};
+
+const stopRotatingBorder = (index) => {
+    rotatingBorders.value[index] = false;
+};
 </script>
+
+<style scoped>
+.sphere-container {
+    cursor: pointer;
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+.sphere {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: all 0.3s ease-out;
+    transform-style: preserve-3d;
+}
+
+.sphere-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease-out;
+    border-radius: 50%;
+}
+
+.sphere::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.3) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.sphere::after {
+    content: "";
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    right: -5%;
+    bottom: -5%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.sphere:hover {
+    transform: scale(0.95) translateZ(-10px);
+}
+
+.sphere:hover::before,
+.sphere:hover::after {
+    opacity: 1;
+}
+
+.sphere:hover .sphere-image {
+    filter: brightness(0.8);
+}
+
+.rotate {
+    display: inline-block;
+    animation: rotate 2s linear infinite;
+}
+
+.rotate-lr {
+    display: inline-block;
+    animation: rotate 3s ease-in-out infinite alternate;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>
