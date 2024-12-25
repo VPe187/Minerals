@@ -1,6 +1,50 @@
 <template>
-    <div class="m-4 overflow-hidden" ref="mineralsContainer">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mx-4 my-2">
+    <div class="relative overflow-hidden">
+        <div class="starry-background relative w-full bg-stone-900 text-white py-4 px-6">
+            <div class="stars-container absolute inset-0">
+                <div v-for="i in 50" :key="i" class="star" :style="getRandomStarStyle()"></div>
+            </div>
+            <div class="relative z-10 flex items-center justify-between">
+                <h1 class="text-3xl font-bold tracking-wider animate-pulse">Ásványok, kőzetek</h1>
+                <div class="rotating-crystal">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L4 6L12 10L20 6L12 2Z"
+                            stroke="white"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path
+                            d="M4 6V18L12 22L20 18V6"
+                            stroke="white"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path
+                            d="M12 10V22"
+                            stroke="white"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path
+                            d="M8 4L16 8"
+                            stroke="white"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path
+                            d="M8 20L16 16"
+                            stroke="white"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="m-4 overflow-hidden" ref="mineralsContainer" @contextmenu.prevent>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 mx-4 my-2">
             <router-link
                 v-for="(imageName, index) in imageNames"
                 :key="index"
@@ -14,18 +58,35 @@
             </router-link>
         </div>
     </div>
+    <Footer />
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { useRoute } from "vue-router";
+import Footer from "./components/Footer.vue";
+
+function getRandomStarStyle() {
+    return {
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * 5}s`,
+        animationDuration: `${5 + Math.random() * 5}s`,
+    };
+}
 
 const route = useRoute();
 const mineralsContainer = ref(null);
 const scrollPosition = ref(0);
 
 const imageNames = [
-    "agate",
+    "agate_carnelian",
+    "agate_crazy",
+    "agate_grape",
+    "agate_lace",
+    "agate_merlinite",
+    "agate_mexican",
+    "agate_moss",
     "amazonite",
     "amber",
     "amethyst",
@@ -33,27 +94,44 @@ const imageNames = [
     "anyolite",
     "apatite",
     "aquamarine",
-    "aragonite",
-    "aventurine",
+    "aragonite_blue",
+    "aragonite_flower",
+    "aragonite_pink",
+    "aventurine_blue",
+    "aventurine_green",
+    "aventurine_yellow",
+    "azurite",
     "barite",
     "bismuth",
+    "bornite",
     "boulangerite",
-    "cactus",
-    "calcite",
+    "calcite_chocolate",
+    "calcite_orange",
+    "calcite_white",
     "celestine",
-    "chalcopyrite",
+    "chalcopyrite_fujian",
+    "chalcopyrite_orig",
     "chrysocolla",
     "cinnabar",
     "citrine",
-    "dragonblood",
+    "cobalt",
+    "dioptase",
     "emerald",
-    "fluorite1",
-    "fluorite2",
+    "epidote",
+    "fluorite_green",
+    "fluorite_purple",
+    "fluorite_white",
+    "fluorite_yellow",
+    "fynchenite",
     "galenite",
     "garnet",
-    "grape",
+    "gibbsite",
     "heliotrope",
-    "jasper",
+    "jasper_dalmatian",
+    "jasper_dragon",
+    "jasper_leopard",
+    "jasper_mookaite",
+    "jasper_red",
     "kianite",
     "kunzite",
     "labradorite",
@@ -61,32 +139,55 @@ const imageNames = [
     "lepidolite",
     "malachite",
     "marcasite",
-    "mexican",
-    "moss",
+    "mica",
+    "moon",
+    "mosasaurus",
     "obsidian",
-    "opal",
+    "opal_honey",
+    "opal_iron",
+    "opal_splash",
+    "opal_water",
     "opalite",
-    "fynchenite",
+    "petersite",
     "pyrite",
-    "quartz1",
-    "quartz2",
+    "pyrolusite",
+    "pyromorphite",
+    "quartz_aura",
+    "quartz_cactus",
+    "quartz_lemurian",
+    "quartz_red",
+    "quartz_rose",
+    "quartz_rutiled",
+    "quartz_smoke",
+    "quartz_white",
+    "realgar",
     "rhodochrosite",
     "rhodolith",
-    "rose",
+    "rhodonite",
     "ruby",
-    "rutile",
-    "selenite",
+    "selenite_orange",
+    "selenite_orig",
+    "septarian",
     "siderite",
-    "smoke",
+    "sodalite",
     "spharelite",
     "sulfur",
     "sun",
     "terrahertz",
     "tiger",
-    "tourmaline",
+    "topaz",
+    "tourmaline_black",
+    "tourmaline_green",
+    "tourmaline_pink",
+    "tourmaline_watermelone",
+    "tourmaline_yellow",
+    "tree",
     "unakite",
     "vanadinite",
-    "watermelone",
+    "variscite",
+    "veszelyite",
+    "vivianite",
+    "zaphire",
     "zebra",
 ];
 
@@ -138,10 +239,50 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.hover-container {
-    perspective: 1000px;
-    padding: 5px;
-    transition: all 0.5s ease-in-out;
+.starry-background {
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    overflow: hidden;
+}
+
+.stars-container {
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle 10s infinite;
+}
+
+@keyframes twinkle {
+    0%,
+    100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.rotating-crystal {
+    animation: rotate 10s linear infinite;
+}
+
+.rotating-crystal svg {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .sphere {
@@ -154,11 +295,9 @@ onBeforeUnmount(() => {
 }
 
 .menuImage {
-    @apply cursor-pointer relative inline-block;
-    @apply rounded-full;
+    @apply cursor-pointer relative inline-block rounded-full;
     @apply transition-all duration-500 ease-in-out;
-    @apply z-10;
-    @apply shadow-lg;
+    @apply z-10 shadow-lg;
     @apply filter saturate-100 brightness-100;
     @apply hover:drop-shadow-md hover:shadow-stone-600/60;
     @apply hover:saturate-150 hover:brightness-110;
