@@ -105,27 +105,59 @@ const loadImages = async () => {
     imgSources.value = [];
     noImagesFound.value = false;
 
+    // Escape special characters in mineral name for regex safety (optional but recommended)
+    // Ezt csak akkor kell beépíteni, ha a mineral.value tartalmazhat regex speciális karaktereket, pl. '.' , '+', '*' stb.
+    // const escapedMineralName = mineral.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const mineralNameForRegex = mineral.value; // Használd az 'escapedMineralName'-t, ha szükséges
+
+    // Reguláris kifejezés:
+    // ^                   - Sor eleje
+    // ${mineralNameForRegex} - Pontosan az ásvány neve
+    // _                   - Egy aláhúzás
+    // (\d{2})             - Pontosan két számjegy (ezt meg is őrizzük, bár itt nem használjuk fel közvetlenül)
+    // t                   - A 't' karakter (thumbnail jelölés)
+    // \.                  - Egy pont karakter (a '.' speciális jelentése miatt '\'-el kell escape-elni)
+    // jpg                 - A 'jpg' kiterjesztés
+    // $                   - Sor vége
+    const thumbnailRegex = new RegExp(`^${mineralNameForRegex}_\\d{2}t\\.jpg$`);
+
     try {
         const images = import.meta.glob("../assets/*.jpg");
+        // Használj Promise.all-t a párhuzamos betöltéshez és jobb teljesítményhez
+        const imagePromises = [];
+
         for (const path in images) {
             const filename = path.split("/").pop();
-            if (filename.startsWith(`${mineral.value}_`) && filename.match(/_\d{2}t\.jpg$/)) {
-                const thumbnailModule = await images[path]();
-                const fullPath = path.replace("t.jpg", ".jpg");
-                const fullModule = await images[fullPath]();
 
-                imgSources.value.push({
-                    thumbnail: thumbnailModule.default,
-                    full: fullModule.default,
-                });
+            // Ellenőrzés a pontos regex mintával
+            if (thumbnailRegex.test(filename)) {
+                const fullPath = path.replace(/_(\d{2})t\.jpg$/, `_$1.jpg`); // Megtartja a számot a teljes képnél is, ha az is úgy van elnevezve
+
+                // Hozzáadjuk a betöltési ígéreteket egy tömbhöz
+                imagePromises.push(
+                    Promise.all([images[path](), images[fullPath]()])
+                        .then(([thumbnailModule, fullModule]) => ({
+                            thumbnail: thumbnailModule.default,
+                            full: fullModule.default,
+                        }))
+                        .catch((err) => {
+                            console.error(`Hiba a képek betöltésekor (${path}, ${fullPath}):`, err);
+                            return null; // Hiba esetén null-t adunk vissza, amit később kiszűrünk
+                        })
+                );
             }
         }
+
+        // Várunk az összes kép betöltésére
+        const loadedSources = (await Promise.all(imagePromises)).filter((source) => source !== null); // Kiszűrjük a sikertelen betöltéseket
+
+        imgSources.value = loadedSources;
 
         if (imgSources.value.length === 0) {
             noImagesFound.value = true;
         }
     } catch (error) {
-        console.error("Error loading images:", error);
+        console.error("Error loading image manifest:", error);
         noImagesFound.value = true;
     }
 };
@@ -171,7 +203,7 @@ const closeModal = () => {
     showModal.value = false;
     setTimeout(() => {
         showModalBackdrop.value = false;
-        selectedImageSrc.value = "";
+        //selectedImageSrc.value = "";
         isClosing.value = false;
     }, 300);
 };
@@ -257,7 +289,7 @@ const onImageLoad = () => {
 }
 
 .sphere:hover .sphere-label {
-    transform: translateY(0);
+    transform: translateY(10);
 }
 
 .sphere:hover::before,
@@ -346,7 +378,7 @@ header {
 @keyframes zoom-fade-in {
     from {
         opacity: 0;
-        transform: scale(0.95);
+        transform: scale(1.95);
     }
     to {
         opacity: 1;

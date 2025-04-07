@@ -1,11 +1,14 @@
 <template>
-    <div class="flex w-full text-xs justify-center text-stone-600 px-8 pb-2 pt-2 mt-6">
-        Minerals v.04 |
-        <span class="px-1">nodeJS, vite, vue3 | &copy; 2024</span>
+    <div class="flex w-full text-xs justify-center text-stone-600 my-0">Minerals v.1.01</div>
+    <div class="flex w-full text-xs justify-center text-stone-600 my-0">
+        <span class="px-1">Debian, Apache, nodeJS, vite, vue3, Tailwind</span>
+    </div>
+    <div class="flex w-full text-xs justify-center text-stone-600 py-2">
+        <span class="mr-2">&copy;</span>
         <span class="rotate-lr mr-2">ʕʘ̅͜ʘ̅ʔ</span>
         &lt;V&#9650;&#1071;G
         <span class="rotate">&#9650;</span>
-        /P&#926;T&#926;R&gt;
+        /P&#926;T&#926;R&gt;&nbsp;|&nbsp;2024
     </div>
 </template>
 
